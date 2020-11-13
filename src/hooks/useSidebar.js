@@ -2,9 +2,10 @@ import React, { createContext, useContext, useState } from 'react'
 import Sidebar from 'react-sidebar'
 import styled from 'styled-components'
 import Button from 'react-bootstrap/Button'
-
+import AuthService from '../services/AuthService';
 import { ReactComponent as ProfileIcon } from '../assets/profile.svg'
 import { useAuth } from './useAuth'
+import { swapUserType } from '../helpers/UserTypeHelper';
 
 const SidebarContainer = styled.div`
   background-color: #00988D;
@@ -30,6 +31,16 @@ const Navigation = styled.div`
 
 function SidebarContent() {
   const [user, loading, error] = useAuth()
+
+  const logoutUser = () =>{
+    AuthService.logout();
+    window.location.href = "/";
+  }
+
+  const changeUserType = () => {
+    swapUserType()
+    window.location.href = "/";
+  }
 
   return (
     <SidebarContainer>
@@ -59,10 +70,11 @@ function SidebarContent() {
 
       <div style={{ marginTop: 64 }}>
         <Button
+          onClick={changeUserType}
           variant='outline-but-invalid'
           style={{ border: '1px solid white', color: 'white', borderRadius: 20 }}
         >
-          Cambiar a { user.role === 'employer'? "Empleador": "Empleado" }
+          Cambiar a { user.role === 'employer'? "Colaborador": "Empleador" }
         </Button>
       </div>
       <hr color='#EEEEEE' style={{ margin: '16px -16px' }} />
@@ -71,7 +83,7 @@ function SidebarContent() {
         <div style={{ color: '#C4C4C4' }}>
           Configuración
         </div>
-        <div style={{ color: '#C4C4C4' }}>
+        <div onClick={logoutUser} style={{ color: '#C4C4C4' }}>
           Cerrar Sesión
         </div>
       </Navigation>
