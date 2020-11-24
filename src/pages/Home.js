@@ -8,10 +8,10 @@ import BootstrapButton from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import MenuHeader from "../components/MenuHeader";
+import MenuHeader from "../components/headers/MenuHeader";
 import { ReactComponent as MoneyIcon } from "../assets/money.svg";
-import { useAuth } from "../hooks/useAuth";
 import JobService from "../services/JobService";
+import { useUser } from "../hooks/useUser";
 
 const JobCardContainer = styled.div`
   background-color: white;
@@ -260,7 +260,7 @@ const Container = styled.div`
 `;
 
 function Home() {
-  const [user] = useAuth();
+  const user = useUser();
 
   return (
     <Container>

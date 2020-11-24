@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import InternalHeader from "./InternalHeader";
-import { useSidebar } from "../hooks/useSidebar";
+import { useSidebar } from "../../hooks/useSidebar";
 
 const IconButton = styled.div`
   cursor: pointer;

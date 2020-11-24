@@ -5,8 +5,8 @@ import Button from "react-bootstrap/Button";
 
 import AuthService from "../services/AuthService";
 import { ReactComponent as ProfileIcon } from "../assets/profile.svg";
-import { useAuth } from "./useAuth";
 import { swapUserType } from "../helpers/UserTypeHelper";
+import { useUser } from "./useUser";
 
 const SidebarContainer = styled.div`
   background-color: #00988d;
@@ -41,7 +41,7 @@ const A = styled.a`
 `;
 
 function SidebarContent() {
-  const [user, loading, error] = useAuth();
+  const user = useUser();
 
   const logoutUser = () => {
     AuthService.logout();

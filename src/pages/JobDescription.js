@@ -4,8 +4,8 @@ import Button from "react-bootstrap/Button";
 import { useParams } from "react-router-dom";
 
 import JobService from "../services/JobService";
-import BackHeader from "../components/BackHeader";
-import { useAuth } from "../hooks/useAuth";
+import BackHeader from "../components/headers/BackHeader";
+import { useUser } from "../hooks/useUser";
 
 const DescriptionContainer = styled.div`
   background-color: #eeeeee;
@@ -134,7 +134,7 @@ const Container = styled.div`
 `;
 
 function JobDescription() {
-  const [user] = useAuth();
+  const user = useUser();
 
   return (
     <Container>

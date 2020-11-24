@@ -6,7 +6,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
-import JobHeader from "../components/JobHeader";
+import JobHeader from "../components/headers/JobHeader";
 
 const MessageContainer = styled.div`
   width: 100%;

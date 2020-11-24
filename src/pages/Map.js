@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import GoogleMapReact from "google-map-react";
 
-import JobHeader from "../components/JobHeader";
+import JobHeader from "../components/headers/JobHeader";
 
 const AnyReactComponent = ({ text }) => (
   <div style={{ color: "blue" }}>{text}</div>

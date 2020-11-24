@@ -1,11 +1,13 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
 import styled from "styled-components";
 
-import { ProtectedRoute } from "./components/route/ProtectedRoute";
-
-import { SidebarProvider } from "./hooks/useSidebar";
-import { AuthProvider } from "./hooks/useAuth";
+import { useUser } from "./hooks/useUser";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,6 +16,7 @@ import JobDescription from "./pages/JobDescription";
 import CreateJob from "./pages/CreateJob";
 import Chat from "./pages/Chat";
 import Map from "./pages/Map";
+import NotFound from "./pages/NotFound";
 
 const AppContainer = styled.div`
   display: flex;
@@ -44,35 +47,51 @@ const AppInnerContainer = styled.div`
   }
 `;
 
-export default function App() {
+function AuthenticatedApp() {
   return (
-    <AuthProvider>
-      <SidebarProvider>
-        <AppContainer>
-          <AppInnerContainer>
-            <Router>
-              <Switch>
-                <ProtectedRoute exact path="/" component={Home} />
-                <Route path="/login" component={Login} />
-                <Route path="/register" component={Register} />
-                <Route path="/job-description/:id" component={JobDescription} />
-                <Route path="/create-job" component={CreateJob} />
-                <Route path="/chat" component={Chat} />
-                <Route path="/map" component={Map} />
-                <Route path="*" component={NotFound} />
-              </Switch>
-            </Router>
-          </AppInnerContainer>
-        </AppContainer>
-      </SidebarProvider>
-    </AuthProvider>
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route path="/job-description/:id" component={JobDescription} />
+      <Route path="/create-job" component={CreateJob} />
+      <Route path="/chat" component={Chat} />
+      <Route path="/map" component={Map} />
+      <Route path="*" component={NotFound} />
+    </Switch>
   );
 }
 
-function NotFound() {
+function UnauthenticatedApp() {
   return (
-    <div>
-      <h3 className={"text-light"}>404 Not Found</h3>
-    </div>
+    <Switch>
+      <Route
+        exact
+        path="/"
+        render={(props) => (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: props.location },
+            }}
+          />
+        )}
+      />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="*" component={NotFound} />
+    </Switch>
+  );
+}
+
+export default function App() {
+  const user = useUser();
+
+  return (
+    <AppContainer>
+      <AppInnerContainer>
+        <Router>
+          {user.isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+        </Router>
+      </AppInnerContainer>
+    </AppContainer>
   );
 }

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
-import BackHeader from "../components/BackHeader";
+import BackHeader from "../components/headers/BackHeader";
 import JobService from "../services/JobService";
 
 const FormularyContainer = styled.div`
