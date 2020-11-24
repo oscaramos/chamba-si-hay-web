@@ -22,16 +22,17 @@ const Container = styled.div`
   }
 `
 
-function Login() {
+function Login({ history }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  console.log("history", history);
   const userLogin = async() =>{
     const result = await AuthService.login(username, password);
     const {status, data} = result;
     if(status === 200){
       AuthService.storageToken(data.token);
-      window.location.href = "/";
+      //browserHistory.push('/')
+      history.push('/')
     }
     else{
       alert("Datos incorrectos");
@@ -52,7 +53,7 @@ function Login() {
         <Form.Control onChange={(e)=>setUsername(e.target.value)} type='text' placeholder='Usuario' name="username"/>
         <Form.Label>Contraseña</Form.Label>
         <Form.Control onChange={(e)=>setPassword(e.target.value)} type='password' placeholder='Contraseña' />
-        <Button onClick={userLogin} variant="primary" block style={{ marginTop: 32, backgroundColor:"#53C9BD" }}>
+        <Button onClick={userLogin} variant="primary" block style={{ marginTop: 32, backgroundColor:"#53C9BD", border: "none", }}>
           Iniciar Sesión
         </Button>
         <Button variant="light" block href="/register">

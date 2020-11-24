@@ -1,4 +1,5 @@
 import React,{useState, useEffect}from 'react'
+import { Link } from "react-router-dom";
 import styled from 'styled-components'
 
 import Nav from 'react-bootstrap/Nav'
@@ -100,27 +101,27 @@ const ButtonAddJob = () => {
         bottom: 5, 
         right: 10, 
       }}>
-        <a
-        href="/create-job"
-        style={{
-          backgroundColor: "#00988D", 
-          height: 60, 
-          width: 60,
-          borderRadius: 30,
-          color: "#fff",
-          display:"flex",
-          justifyContent: "center",
-          alignItems: "center",
-
-        }}>
-          <span><i style={{fontSize: 30}} class="fas fa-plus"></i></span>
-        </a>
+        <Link 
+          to={'/create-job'}
+          style={{
+            backgroundColor: "#00988D", 
+            height: 60, 
+            width: 60,
+            borderRadius: 30,
+            color: "#fff",
+            display:"flex",
+            justifyContent: "center",
+            alignItems: "center",
+  
+          }}>
+          <span><i style={{fontSize: 30}} className="fas fa-plus"></i></span>
+        </Link>
     </div> 
   );
 }
 
 
-function Announcements({ role }) {
+function Announcements({ role, createJob }) {
   const [jobs, setJobs] = useState([]);
   
   useEffect(() => {
@@ -141,13 +142,15 @@ function Announcements({ role }) {
     }
   }
 
+
+
   return (
     <AnnouncementsContainer>
       {jobs.map((item, index) => {
         return <JobCard item={item} key={(index+1).toString()} role={role} />
       })}
 
-      {role==="employer" && <ButtonAddJob/>}
+      {role==="employer" && <ButtonAddJob action={createJob}/>}
     </AnnouncementsContainer>
   )
 }
@@ -239,12 +242,17 @@ const Container = styled.div`
   height: 100%;
 `
 
-function Home() {
+function Home({history}) {
   const [user, loading, error] = useAuth()
+
+  const goToCreateJob = () =>{
+    history.push('/create-job')
+  }
+
   return (
     <Container>
       <Header role={user.role} />
-      <Announcements role={user.role} />     
+      <Announcements role={user.role} goToCreateJob={goToCreateJob}/>     
     </Container>
   )
 }
