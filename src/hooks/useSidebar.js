@@ -73,9 +73,9 @@ function SidebarContent() {
 
       <Navigation>
         <A href="/" active>
-          Inicio
+          Publicaciones
         </A>
-        <A href="#">Mis Trabajos</A>
+        <A href="#">Mis publicaciones</A>
         <A href="#">Perfil</A>
       </Navigation>
 

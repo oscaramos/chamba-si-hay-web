@@ -54,19 +54,20 @@ function JobCard({ role, item, ...props }) {
   return (
     <JobCardContainer {...props}>
       <JobCardDescription>
-        <div
+        <Link
+          className="text-secondary"
+          to={href}
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "baseline",
-          }}
-        >
+          }}>
           <h5>{item.title}</h5>
           <div style={{ fontSize: 12, marginLeft: 12 }}>
             {" "}
             {new Date(item.startDate).toDateString()}
           </div>
-        </div>
+        </Link>
         <div>
           <p>{item.description}</p>
         </div>
@@ -74,28 +75,37 @@ function JobCard({ role, item, ...props }) {
         <JobCardButtons>
           {role === "collaborator" && (
             <>
-              <Button variant="primary" href={href}>
-                Aceptar
-              </Button>
-              <Button variant="outline-danger" href={href}>
-                Rechazar
-              </Button>
+              <Link variant="primary" to={href}>
+                <Button variant="primary" >
+                  Aceptar
+                </Button>
+              </Link>
+              
+              <Link variant="primary" to={href}>
+                <Button variant="outline-danger">
+                  Rechazar
+                </Button>
+              </Link>
+              
             </>
           )}
 
           {role === "employer" && (
-            <Button variant="outline-danger" href={href}>
-              Cancelar
-            </Button>
+            <Link variant="primary" to={href}>
+              <Button variant="outline-danger">
+                Cancelar
+              </Button>
+            </Link>
+            
           )}
         </JobCardButtons>
       </JobCardDescription>
 
-      <JobCardMoney>
+      <JobCardMoney as={Link} to={href}>
         <div>
           <MoneyIcon />
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className="text-dark" style={{ marginTop: 8 }}>
           <h6>S/. {item.amount}</h6>
         </div>
       </JobCardMoney>
