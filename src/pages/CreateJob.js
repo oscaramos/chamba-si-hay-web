@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
 import BackHeader from "../components/headers/BackHeader";
-import JobService from "../services/JobService";
+import useJobs from "../hooks/useJobs";
 
 const FormularyContainer = styled.div`
   background-color: #eeeeee;
@@ -26,23 +26,22 @@ function Formulary() {
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
 
-  const createJob = async () => {
-    const job = {
-      title,
-      amount,
-      address,
-      district,
-      startDate,
-      endDate,
-      description,
-    };
-    const result = await JobService.createJob(job);
-    console.log("result", result);
-    const { status } = result;
-    if (status === 200) {
+  const [, { createJob }] = useJobs();
+
+  const handleCreateJob = async () => {
+    try {
+      await createJob({
+        title,
+        amount,
+        address,
+        district,
+        startDate,
+        endDate,
+        description,
+      });
       window.location.href = "/";
-    } else {
-      alert("Error al crear el anuncio");
+    } catch (error) {
+      console.error(error.message);
     }
   };
 
@@ -108,7 +107,7 @@ function Formulary() {
         </Form.Group>
       </FormularyContent>
 
-      <Button onClick={createJob} variant="primary" block>
+      <Button onClick={handleCreateJob} variant="primary" block>
         Publicar
       </Button>
     </FormularyContainer>

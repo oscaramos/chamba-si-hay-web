@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 import { useParams } from "react-router-dom";
 
-import JobService from "../services/JobService";
 import BackHeader from "../components/headers/BackHeader";
+import useJob from "../hooks/useJob";
 import { useUser } from "../hooks/useUser";
 
 const DescriptionContainer = styled.div`
@@ -57,26 +57,7 @@ const Value = styled.div`
 function Description({ role }) {
   const { id } = useParams();
 
-  const [job, setJob] = useState({
-    amount: "loading",
-    title: "loading",
-    address: "loading",
-    endDate: "loading",
-    description: "loading",
-  });
-
-  useEffect(() => {
-    const getOneJob = async () => {
-      const result = await JobService.getJob(id);
-
-      if (result.status === 200) {
-        const job = result.response.job || {};
-        setJob(job);
-      }
-    };
-
-    getOneJob();
-  }, []);
+  const [job, { acceptJob, rejectJob, updateJob, deleteJob }] = useJob(id);
 
   return (
     <DescriptionContainer>
@@ -105,10 +86,18 @@ function Description({ role }) {
       <OperationsContainer>
         {role === "collaborator" && (
           <>
-            <Button variant="primary" style={{ color: "white", width: "100%" }}>
+            <Button
+              variant="primary"
+              style={{ color: "white", width: "100%" }}
+              onClick={acceptJob}
+            >
               Aceptar
             </Button>
-            <Button variant="danger" style={{ width: "100%" }}>
+            <Button
+              variant="danger"
+              style={{ width: "100%" }}
+              onClick={rejectJob}
+            >
               Rechazar
             </Button>
           </>
@@ -116,11 +105,19 @@ function Description({ role }) {
 
         {role === "employer" && (
           <>
-            <Button variant="primary" style={{ color: "white", width: "100%" }}>
+            <Button
+              variant="primary"
+              style={{ color: "white", width: "100%" }}
+              onClick={updateJob}
+            >
               Editar
             </Button>
-            <Button variant="danger" style={{ width: "100%" }}>
-              Rechazar
+            <Button
+              variant="danger"
+              style={{ width: "100%" }}
+              onClick={deleteJob}
+            >
+              Eliminar
             </Button>
           </>
         )}
