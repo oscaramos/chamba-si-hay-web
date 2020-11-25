@@ -72,7 +72,7 @@ export default class JobService {
     try {
       console.log("job", job);
       if (job === null) {
-        throw "Job null";
+        throw new Error("Job null");
       }
       let response = await fetch(urlData, {
         method: "POST",
@@ -115,5 +115,26 @@ export default class JobService {
         response: null,
       };
     }
+  }
+
+  static async deleteJob(job) {
+    return {
+      status: "we did it guys, job is no more!",
+      response: "",
+    };
+  }
+
+  static async acceptJob(job) {
+    return {
+      status: "ok",
+      response: "also ok",
+    };
+  }
+
+  static async rejectJob(job) {
+    return {
+      status: "ok :(",
+      response: "also ok...",
+    };
   }
 }

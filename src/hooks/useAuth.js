@@ -62,14 +62,14 @@ export function AuthProvider(props) {
       // user is not authenticated, do not request to server
       setLoading(false);
     }
-  }, []);
+  }, [user.isAuthenticated]);
 
   if (loading) {
     return <FullPageSpinner />;
   }
 
   if (error) {
-    return `error sucedido: ${error}`;
+    return `error autenticando: ${error}`;
   }
 
   const login = async (username, password) => {
