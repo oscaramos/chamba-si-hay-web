@@ -1,6 +1,28 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { getUserType } from "../helpers/UserTypeHelper";
 import AuthService from "../services/AuthService";
+import styled from "styled-components";
+import Spinner from "react-bootstrap/Spinner";
+
+const FullPageSpinnerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  background-color: #53c9bd;
+`;
+
+function FullPageSpinner() {
+  return (
+    <FullPageSpinnerContainer>
+      <Spinner animation="border" />
+    </FullPageSpinnerContainer>
+  );
+}
 
 const AuthContext = createContext(undefined);
 
@@ -21,12 +43,12 @@ export function AuthProvider(props) {
 
       if (response.status === 200) {
         const responseUser = response.data.user;
-        setUser({
+        setUser((user) => ({
           ...user,
           name: responseUser.firstName + " " + responseUser.lastName,
           email: responseUser.email,
           role: getUserType(),
-        });
+        }));
 
         setLoading(false);
       } else {
@@ -43,7 +65,7 @@ export function AuthProvider(props) {
   }, []);
 
   if (loading) {
-    return "cargando";
+    return <FullPageSpinner />;
   }
 
   if (error) {
