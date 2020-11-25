@@ -6,12 +6,15 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import BootstrapButton from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import MenuHeader from "../components/headers/MenuHeader";
-import { ReactComponent as MoneyIcon } from "../assets/money.svg";
-import JobService from "../services/JobService";
+import useJob from "../hooks/useJob";
+import useJobs from "../hooks/useJobs";
+import Scrollable from "../components/Scrollable";
 import { useUser } from "../hooks/useUser";
+
+import { ReactComponent as MoneyIcon } from "../assets/money.svg";
 
 const JobCardContainer = styled.div`
   background-color: white;
@@ -47,8 +50,21 @@ const Button = styled(BootstrapButton)`
   border-radius: 16px;
 `;
 
+const toDDMMYYYY = (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  if (month < 10) {
+    return `${day}-0${month}-${year}`;
+  } else {
+    return `${day}-${month}-${year}`;
+  }
+};
+
 function JobCard({ role, item, ...props }) {
   const href = `/job-description/${item._id}`;
+  const [, { acceptJob, rejectJob }] = useJob(item._id, { skipRequest: true });
 
   return (
     <JobCardContainer {...props}>
@@ -60,10 +76,12 @@ function JobCard({ role, item, ...props }) {
             alignItems: "baseline",
           }}
         >
-          <h5>{item.title}</h5>
+          <a href={href} style={{ color: "black" }}>
+            <h5>{item.title}</h5>
+          </a>
           <div style={{ fontSize: 12, marginLeft: 12 }}>
             {" "}
-            {new Date(item.startDate).toDateString()}
+            {toDDMMYYYY(new Date(item.endDate))}
           </div>
         </div>
         <div>
@@ -73,10 +91,10 @@ function JobCard({ role, item, ...props }) {
         <JobCardButtons>
           {role === "collaborator" && (
             <>
-              <Button variant="primary" href={href}>
+              <Button variant="primary" onClick={acceptJob}>
                 Aceptar
               </Button>
-              <Button variant="outline-danger" href={href}>
+              <Button variant="outline-danger" onClick={rejectJob}>
                 Rechazar
               </Button>
             </>
@@ -144,30 +162,42 @@ const AnnouncementsContainer = styled.div`
   min-height: 100%;
 `;
 
-function Announcements({ role }) {
-  const [jobs, setJobs] = useState([]);
+const getFilteredJobs = (jobs, role, filter) => {
+  if (role === "employer") {
+    if (filter === "active") {
+      return jobs.filter((job) => new Date(job.endDate) < new Date());
+    } else if (filter === "expired") {
+      return jobs.filter((job) => new Date(job.endDate) > new Date());
+    }
+  } else if (role === "collaborator") {
+    if (filter === "announcements") {
+      return jobs; // todo: waiting for backend
+      // return jobs.filter((job) => job.state === "pending");
+    } else if (filter === "accepted") {
+      return jobs.filter((job) => job.state === "accepted");
+    } else if (filter === "rejected") {
+      return jobs.filter((job) => job.state === "rejected");
+    }
+  }
+};
+
+function Announcements({ role, filter }) {
+  const [jobs, { getJobs }] = useJobs();
 
   useEffect(() => {
-    const getJobs = async () => {
-      const result =
-        role === "employer"
-          ? await JobService.getMyPublishJobs()
-          : await JobService.getAllJobs();
+    getJobs(role);
+    // eslint-disable-next-line
+  }, [role]);
 
-      if (result.status === 200) {
-        const data = result.response || [];
-        setJobs(data);
-      }
-    };
-
-    getJobs();
-  }, []);
+  const filteredJobs = getFilteredJobs(jobs, role, filter);
 
   return (
     <AnnouncementsContainer>
-      {jobs.map((item, index) => (
-        <JobCard key={(index + 1).toString()} item={item} role={role} />
-      ))}
+      <Scrollable>
+        {filteredJobs.map((item) => (
+          <JobCard key={item._id} item={item} role={role} />
+        ))}
+      </Scrollable>
 
       {role === "employer" && <ButtonAddJob />}
     </AnnouncementsContainer>
@@ -179,7 +209,13 @@ const Searcher = styled.div`
   border-radius: 50px;
 `;
 
-function HomeHeader({ role }) {
+function HomeHeader({ role, filter, onChangeFilter }) {
+  const handleSelect = (newFilter) => {
+    if (newFilter !== filter) {
+      onChangeFilter(newFilter);
+    }
+  };
+
   return (
     <MenuHeader
       title={role === "collaborator" ? "Mis Trabajos" : "Mis Propuestas"}
@@ -215,10 +251,11 @@ function HomeHeader({ role }) {
       <Nav
         className="justify-content-center"
         variant="tabs"
-        defaultActiveKey="announcements"
+        defaultActiveKey={role === "collaborator" ? "announcements" : "active"}
         style={{ marginTop: 32 }}
+        onSelect={handleSelect}
       >
-        {role === "collaborator" ? (
+        {role === "collaborator" && (
           <>
             <Nav.Item>
               <Nav.Link href="#" eventKey="announcements">
@@ -236,15 +273,16 @@ function HomeHeader({ role }) {
               </Nav.Link>
             </Nav.Item>
           </>
-        ) : (
+        )}
+        {role === "employer" && (
           <>
             <Nav.Item>
-              <Nav.Link href="#" eventKey="announcements">
+              <Nav.Link href="#" eventKey="active">
                 Activos
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link href="#" eventKey="accepted">
+              <Nav.Link href="#" eventKey="expired">
                 Vencidos
               </Nav.Link>
             </Nav.Item>
@@ -261,11 +299,18 @@ const Container = styled.div`
 
 function Home() {
   const user = useUser();
+  const [filter, setFilter] = useState(
+    user.role === "employer" ? "active" : "announcements"
+  );
 
   return (
     <Container>
-      <HomeHeader role={user.role} />
-      <Announcements role={user.role} />
+      <HomeHeader
+        role={user.role}
+        filter={filter}
+        onChangeFilter={(newFilter) => setFilter(newFilter)}
+      />
+      <Announcements role={user.role} filter={filter} />
     </Container>
   );
 }
