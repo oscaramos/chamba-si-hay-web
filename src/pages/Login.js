@@ -1,8 +1,10 @@
-import React from 'react'
-import styled from 'styled-components'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import Logo from '../assets/logo.svg'
+import React, { useState } from "react";
+import styled from "styled-components";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+
+import Logo from "../assets/logo.svg";
+import { useAuth } from "../hooks/useAuth";
 
 const Container = styled.div`
   display: flex;
@@ -13,38 +15,78 @@ const Container = styled.div`
   width: 100%;
 
   background: linear-gradient(rgba(0, 152, 141, 0.68), rgba(0, 152, 141, 0.68)),
-  url("/assets/login-register-background.jpg");
+    url("/assets/login-register-background.jpg");
   background-size: cover;
-  
+
   @media screen and (max-width: 600px) {
     height: 100%;
   }
-`
+`;
+
+const FormLabel = styled(Form.Label)`
+  color: white;
+`;
 
 function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { login } = useAuth();
+
+  const userLogin = async () => {
+    try {
+      await login(username, password);
+      window.location.href = "/";
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <Container>
       <div style={{ marginTop: 50 }}>
-        <img src={Logo} alt='' />
+        <img src={Logo} alt="" />
       </div>
 
       <h1>Chamba Si</h1>
       <h1>Hay</h1>
 
-      <Form.Group style={{ width: '100%' }}>
-        <Form.Label>Usuario</Form.Label>
-        <Form.Control type='text' placeholder='Usuario' name="username"/>
-        <Form.Label>Contraseña</Form.Label>
-        <Form.Control type='password' placeholder='Contraseña' />
-        <Button variant="primary" block style={{ marginTop: 32 }}>
-          Iniciar Sesión
-        </Button>
-        <Button variant="light" block>
-          Registrarse
-        </Button>
+      <Form.Group style={{ width: "100%" }}>
+        <Form.Group>
+          <FormLabel>Usuario</FormLabel>
+          <Form.Control
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            placeholder="Usuario"
+            name="username"
+          />
+        </Form.Group>
+
+        <Form.Group>
+          <FormLabel>Contraseña</FormLabel>
+          <Form.Control
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            placeholder="Contraseña"
+          />
+        </Form.Group>
+
+        <Form.Group>
+          <Button
+            onClick={userLogin}
+            variant="primary"
+            block
+            style={{ marginTop: 32, backgroundColor: "#53C9BD" }}
+          >
+            Iniciar Sesión
+          </Button>
+          <Button variant="light" block href="/register">
+            Crear nueva cuenta
+          </Button>
+        </Form.Group>
       </Form.Group>
     </Container>
-  )
+  );
 }
 
-export default Login
+export default Login;
