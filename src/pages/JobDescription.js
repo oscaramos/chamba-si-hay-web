@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 import { useParams } from "react-router-dom";
 
 import JobService from "../services/JobService";
 import BackHeader from "../components/BackHeader";
 import { useAuth } from "../hooks/useAuth";
-
+import {sleep} from "../helpers/VarHelper";
 const DescriptionContainer = styled.div`
   background-color: #eeeeee;
   padding: 16px 32px;
@@ -57,6 +58,7 @@ const Value = styled.div`
 function Description({ role }) {
   const { id } = useParams();
 
+  const [loading, setLoading] = useState(true);
   const [job, setJob] = useState({
     amount: "loading",
     title: "loading",
@@ -68,7 +70,7 @@ function Description({ role }) {
   useEffect(() => {
     const getOneJob = async () => {
       const result = await JobService.getJob(id);
-
+      setLoading(false);
       if (result.status === 200) {
         const job = result.response.job || {};
         setJob(job);
@@ -80,7 +82,8 @@ function Description({ role }) {
 
   return (
     <DescriptionContainer>
-      <CardContainer>
+
+      {!loading?<CardContainer>
         <Label>Oferta</Label>
         <h2>S/. {job.amount}</h2>
         <PairContainer>
@@ -93,9 +96,9 @@ function Description({ role }) {
         </PairContainer>
         <PairContainer>
           <Label>Fecha</Label>
-          <Value>{job.endDate}</Value>
+          <Value>{new Date(job.endDate.toString()).toLocaleDateString()}</Value>
         </PairContainer>
-      </CardContainer>
+      </CardContainer>:<CardContainer className="text-light"><Spinner animation="border" /></CardContainer>}
 
       <DescriptionContent>
         <h4>Descripción:</h4>

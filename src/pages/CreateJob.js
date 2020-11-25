@@ -126,7 +126,7 @@ const Container = styled.div`
 function CreateJob() {
   return (
     <Container>
-      <BackHeader title="Nueva Chamba" href="/" />
+      <BackHeader title="Nueva Chamba"/>
       <Formulary />
     </Container>
   );

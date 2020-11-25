@@ -42,14 +42,15 @@ const A = styled.a`
 
 function SidebarContent() {
   const [user, loading, error] = useAuth();
-
   const logoutUser = () => {
     AuthService.logout();
     window.location.href = "/";
+    //history.push("/")
   };
 
   const changeUserType = () => {
     swapUserType();
+    // For reload all content
     window.location.href = "/";
   };
 
@@ -72,9 +73,9 @@ function SidebarContent() {
 
       <Navigation>
         <A href="/" active>
-          Inicio
+          Publicaciones
         </A>
-        <A href="#">Mis Trabajos</A>
+        <A href="#">Mis publicaciones</A>
         <A href="#">Perfil</A>
       </Navigation>
 

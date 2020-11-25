@@ -27,7 +27,7 @@ const FormLabel = styled(Form.Label)`
   color: white;
 `;
 
-function Login() {
+function Login({ history }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,8 +36,10 @@ function Login() {
     const { status, data } = result;
     if (status === 200) {
       AuthService.storageToken(data.token);
-      window.location.href = "/";
-    } else {
+      //browserHistory.push('/')
+      history.push('/')
+    }
+    else{
       alert("Datos incorrectos");
     }
   };
