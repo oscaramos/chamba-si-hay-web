@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import Form from "react-bootstrap/Form";
@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 import JobHeader from "../components/headers/JobHeader";
+import useMessages from "../hooks/useMessages";
 
 const MessageContainer = styled.div`
   width: 100%;
@@ -51,6 +52,124 @@ function Message({ children: text, isFromOwner = false }) {
   );
 }
 
+const MessagesContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-grow: 1;
+
+  height: 320px;
+  overflow-y: scroll;
+
+  box-shadow: ${(props) =>
+    props.showShadow
+      ? "inset 0px -131px 100px -140px rgba(0, 0, 0, 0.2)"
+      : undefined};
+
+  // Hide scrollbar
+  ::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  scrollbar-width: none; /* Firefox */
+`;
+
+function isScrollable(element) {
+  return (
+    element.scrollWidth > element.clientWidth ||
+    element.scrollHeight > element.clientHeight
+  );
+}
+
+function MessagesContent({ messages }) {
+  const containerRef = useRef(null);
+
+  const [showShadow, setShowShadow] = useState(true);
+
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    setCanScroll(isScrollable(containerRef.current));
+  }, [messages]);
+
+  const handleScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    if (bottom) {
+      setShowShadow(false);
+    } else {
+      setShowShadow(true);
+    }
+  };
+
+  return (
+    <MessagesContentContainer
+      onScroll={handleScroll}
+      showShadow={canScroll && showShadow}
+      ref={containerRef}
+    >
+      {messages.map((message, index) => (
+        <Message
+          key={`${index} ${message.content}`}
+          isFromOwner={message.isFromOwner}
+        >
+          {message.content}
+        </Message>
+      ))}
+    </MessagesContentContainer>
+  );
+}
+
+const MessagesInputContainer = styled.div`
+  margin-top: 32px;
+  background-color: white;
+  border-radius: 50px;
+`;
+
+function MessagesInput({ onSendMessage }) {
+  const [inputMessage, setInputMessage] = useState("");
+
+  const handleSendMessage = () => {
+    if (inputMessage) {
+      onSendMessage(inputMessage);
+      setInputMessage("");
+    }
+  };
+
+  return (
+    <MessagesInputContainer>
+      <InputGroup>
+        {/* -- Send Input --*/}
+        <Form.Control
+          style={{
+            display: "flex",
+            flexGrow: 1,
+            border: 0,
+            borderRadius: 50,
+          }}
+          type="text"
+          name="message"
+          autoComplete="off"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+        />
+        {/*-- Send Icon --*/}
+        <InputGroup.Append>
+          <InputGroup.Text
+            style={{
+              background: "transparent",
+              border: "1px solid transparent",
+              cursor: "pointer",
+            }}
+            onClick={handleSendMessage}
+          >
+            <FontAwesomeIcon icon={faPaperPlane} color="black" size="lg" />
+          </InputGroup.Text>
+        </InputGroup.Append>
+      </InputGroup>
+    </MessagesInputContainer>
+  );
+}
+
 const MessagesContainer = styled.div`
   background-color: #eeeeee;
   padding: 16px 16px;
@@ -59,53 +178,13 @@ const MessagesContainer = styled.div`
   flex-grow: 1;
 `;
 
-const MessagesInnerContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  flex-grow: 1;
-`;
-
-const InputMessage = styled.div`
-  margin-top: 32px;
-  background-color: white;
-  border-radius: 50px;
-`;
-
 function Messages() {
+  const { messages, send } = useMessages();
+
   return (
     <MessagesContainer>
-      <MessagesInnerContainer>
-        <Message>Mensaje 1</Message>
-        <Message>Mensaje 2</Message>
-        <Message isFromOwner>Mensaje 3</Message>
-      </MessagesInnerContainer>
-
-      <InputMessage>
-        <InputGroup>
-          <Form.Control
-            style={{
-              display: "flex",
-              flexGrow: 1,
-              border: 0,
-              borderRadius: 50,
-            }}
-            type="text"
-            name="message"
-            autoComplete="off"
-          />
-          <InputGroup.Append>
-            <InputGroup.Text
-              style={{
-                background: "transparent",
-                border: "1px solid transparent",
-              }}
-            >
-              <FontAwesomeIcon icon={faPaperPlane} color="black" size="lg" />
-            </InputGroup.Text>
-          </InputGroup.Append>
-        </InputGroup>
-      </InputMessage>
+      <MessagesContent messages={messages} />
+      <MessagesInput onSendMessage={(message) => send(message)} />
     </MessagesContainer>
   );
 }
