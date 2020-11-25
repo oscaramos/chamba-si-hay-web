@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import Logo from "../assets/logo.svg";
-import AuthService from "../services/AuthService";
+import { useAuth } from "../hooks/useAuth";
 
 const Container = styled.div`
   display: flex;
@@ -31,14 +31,14 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const { login } = useAuth();
+
   const userLogin = async () => {
-    const result = await AuthService.login(username, password);
-    const { status, data } = result;
-    if (status === 200) {
-      AuthService.storageToken(data.token);
+    try {
+      await login(username, password);
       window.location.href = "/";
-    } else {
-      alert("Datos incorrectos");
+    } catch (error) {
+      alert(error.message);
     }
   };
 

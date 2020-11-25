@@ -3,10 +3,10 @@ import Sidebar from "react-sidebar";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 
-import AuthService from "../services/AuthService";
 import { ReactComponent as ProfileIcon } from "../assets/profile.svg";
 import { swapUserType } from "../helpers/UserTypeHelper";
 import { useUser } from "./useUser";
+import { useAuth } from "./useAuth";
 
 const SidebarContainer = styled.div`
   background-color: #00988d;
@@ -42,9 +42,10 @@ const A = styled.a`
 
 function SidebarContent() {
   const user = useUser();
+  const { logout } = useAuth();
 
   const logoutUser = () => {
-    AuthService.logout();
+    logout();
     window.location.href = "/";
   };
 

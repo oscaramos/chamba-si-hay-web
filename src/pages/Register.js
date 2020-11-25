@@ -3,8 +3,8 @@ import styled from "styled-components";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import AuthService from "../services/AuthService";
 import Logo from "../assets/logo.svg";
+import { useAuth } from "../hooks/useAuth";
 
 const Container = styled.div`
   display: flex;
@@ -38,19 +38,25 @@ function Register() {
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
 
+  const { register } = useAuth();
+
   const userRegister = async () => {
-    const user = {
-      firstName: name,
-      lastName: lastName,
-      email: email,
-      password: password,
-    };
-    const result = await AuthService.register(user);
-    const { status } = result;
-    if (status === 200) {
-      window.location.href = "/";
-    } else {
-      alert("Error en registro");
+    if (password !== rePassword) {
+      alert("La contraseña y la confirmación de contraseña no coinciden");
+      return;
+    }
+
+    try {
+      await register({
+        firstName: name,
+        lastName: lastName,
+        email: email,
+        password: password,
+      });
+
+      window.location.href = "/login";
+    } catch (error) {
+      alert(error.message);
     }
   };
 

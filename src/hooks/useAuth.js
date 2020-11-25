@@ -72,11 +72,27 @@ export function AuthProvider(props) {
     return `error sucedido: ${error}`;
   }
 
-  const login = () => {};
+  const login = async (username, password) => {
+    const result = await AuthService.login(username, password);
+    const { status, data } = result;
+    if (status === 200) {
+      AuthService.storageToken(data.token);
+    } else {
+      throw new Error("datos incorrectos");
+    }
+  };
 
-  const logout = () => {};
+  const logout = () => {
+    return AuthService.logout();
+  };
 
-  const register = () => {};
+  const register = async (user) => {
+    const result = await AuthService.register(user);
+    const { status } = result;
+    if (status !== 200) {
+      throw new Error("Error en registro");
+    }
+  };
 
   return (
     <AuthContext.Provider
