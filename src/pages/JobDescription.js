@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
 import { useParams } from "react-router-dom";
 
 import BackHeader from "../components/headers/BackHeader";
@@ -58,10 +59,12 @@ function Description({ role }) {
   const { id } = useParams();
 
   const [job, { acceptJob, rejectJob, updateJob, deleteJob }] = useJob(id);
+  const loading = !job
 
   return (
     <DescriptionContainer>
-      <CardContainer>
+
+      {!loading?<CardContainer>
         <Label>Oferta</Label>
         <h2>S/. {job.amount}</h2>
         <PairContainer>
@@ -74,9 +77,14 @@ function Description({ role }) {
         </PairContainer>
         <PairContainer>
           <Label>Fecha</Label>
-          <Value>{job.endDate}</Value>
+          <Value>{new Date(job.endDate.toString()).toLocaleDateString()}</Value>
         </PairContainer>
       </CardContainer>
+        :
+        <CardContainer className="text-light">
+          <Spinner animation="border" />
+        </CardContainer>
+      }
 
       <DescriptionContent>
         <h4>Descripción:</h4>

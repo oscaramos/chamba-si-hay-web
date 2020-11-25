@@ -3,10 +3,10 @@ import Sidebar from "react-sidebar";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 
-import { ReactComponent as ProfileIcon } from "../assets/profile.svg";
-import { swapUserType } from "../helpers/UserTypeHelper";
 import { useUser } from "./useUser";
 import { useAuth } from "./useAuth";
+import { ReactComponent as ProfileIcon } from "../assets/profile.svg";
+import { swapUserType } from "../helpers/UserTypeHelper";
 
 const SidebarContainer = styled.div`
   background-color: #00988d;
@@ -47,10 +47,12 @@ function SidebarContent() {
   const logoutUser = () => {
     logout();
     window.location.href = "/";
+    //history.push("/")
   };
 
   const changeUserType = () => {
     swapUserType();
+    // For reload all content
     window.location.href = "/";
   };
 
@@ -73,9 +75,9 @@ function SidebarContent() {
 
       <Navigation>
         <A href="/" active>
-          Inicio
+          Publicaciones
         </A>
-        <A href="#">Mis Trabajos</A>
+        <A href="#">Mis publicaciones</A>
         <A href="#">Perfil</A>
       </Navigation>
 

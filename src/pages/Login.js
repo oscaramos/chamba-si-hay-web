@@ -27,7 +27,7 @@ const FormLabel = styled(Form.Label)`
   color: white;
 `;
 
-function Login() {
+function Login({ history }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -37,6 +37,7 @@ function Login() {
     try {
       await login(username, password);
       window.location.href = "/";
+      history.push('/')
     } catch (error) {
       alert(error.message);
     }

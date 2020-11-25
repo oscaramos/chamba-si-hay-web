@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React,{ useState, useEffect }from 'react'
+import { Link } from "react-router-dom";
+import styled from 'styled-components'
 
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
@@ -69,21 +70,20 @@ function JobCard({ role, item, ...props }) {
   return (
     <JobCardContainer {...props}>
       <JobCardDescription>
-        <div
+        <Link
+          className="text-secondary"
+          to={href}
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "baseline",
-          }}
-        >
-          <a href={href} style={{ color: "black" }}>
-            <h5>{item.title}</h5>
-          </a>
+          }}>
+          <h5>{item.title}</h5>
           <div style={{ fontSize: 12, marginLeft: 12 }}>
             {" "}
             {toDDMMYYYY(new Date(item.endDate))}
           </div>
-        </div>
+        </Link>
         <div>
           <p>{item.description}</p>
         </div>
@@ -91,28 +91,37 @@ function JobCard({ role, item, ...props }) {
         <JobCardButtons>
           {role === "collaborator" && (
             <>
-              <Button variant="primary" onClick={acceptJob}>
-                Aceptar
-              </Button>
-              <Button variant="outline-danger" onClick={rejectJob}>
-                Rechazar
-              </Button>
+              <Link variant="primary" to={href}>
+                <Button variant="primary" onClick={acceptJob}>
+                  Aceptar
+                </Button>
+              </Link>
+
+              <Link variant="primary" to={href}>
+                <Button variant="outline-danger" onClick={rejectJob}>
+                  Rechazar
+                </Button>
+              </Link>
+
             </>
           )}
 
           {role === "employer" && (
-            <Button variant="outline-danger" href={href}>
-              Cancelar
-            </Button>
+            <Link variant="primary" to={href}>
+              <Button variant="outline-danger">
+                Cancelar
+              </Button>
+            </Link>
+
           )}
         </JobCardButtons>
       </JobCardDescription>
 
-      <JobCardMoney>
+      <JobCardMoney as={Link} to={href}>
         <div>
           <MoneyIcon />
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className="text-dark" style={{ marginTop: 8 }}>
           <h6>S/. {item.amount}</h6>
         </div>
       </JobCardMoney>
@@ -129,23 +138,21 @@ const ButtonAddJob = () => {
         right: 10,
       }}
     >
-      <a
-        href="/create-job"
-        style={{
-          backgroundColor: "#00988D",
-          height: 60,
-          width: 60,
-          borderRadius: 30,
-          color: "#fff",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <span>
-          <FontAwesomeIcon icon={faPlus} style={{ fontSize: 30 }} />
-        </span>
-      </a>
+       <Link
+          to={'/create-job'}
+          style={{
+            backgroundColor: "#00988D",
+            height: 60,
+            width: 60,
+            borderRadius: 30,
+            color: "#fff",
+            display:"flex",
+            justifyContent: "center",
+            alignItems: "center",
+
+          }}>
+          <span><i style={{fontSize: 30}} className="fas fa-plus"></i></span>
+        </Link>
     </div>
   );
 };
