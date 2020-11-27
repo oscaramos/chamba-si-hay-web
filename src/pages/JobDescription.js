@@ -59,32 +59,36 @@ function Description({ role }) {
   const { id } = useParams();
 
   const [job, { acceptJob, rejectJob, updateJob, deleteJob }] = useJob(id);
-  const loading = !job
+  const loading = !job;
+
+  // todo: when job is accepted, then show options to go to chat
 
   return (
     <DescriptionContainer>
-
-      {!loading?<CardContainer>
-        <Label>Oferta</Label>
-        <h2>S/. {job.amount}</h2>
-        <PairContainer>
-          <Label>Puesto</Label>
-          <Value>{job.title}</Value>
-        </PairContainer>
-        <PairContainer>
-          <Label>Lugar</Label>
-          <Value>{job.address}</Value>
-        </PairContainer>
-        <PairContainer>
-          <Label>Fecha</Label>
-          <Value>{new Date(job.endDate.toString()).toLocaleDateString()}</Value>
-        </PairContainer>
-      </CardContainer>
-        :
+      {!loading ? (
+        <CardContainer>
+          <Label>Oferta</Label>
+          <h2>S/. {job.amount}</h2>
+          <PairContainer>
+            <Label>Puesto</Label>
+            <Value>{job.title}</Value>
+          </PairContainer>
+          <PairContainer>
+            <Label>Lugar</Label>
+            <Value>{job.address}</Value>
+          </PairContainer>
+          <PairContainer>
+            <Label>Fecha</Label>
+            <Value>
+              {new Date(job.endDate.toString()).toLocaleDateString()}
+            </Value>
+          </PairContainer>
+        </CardContainer>
+      ) : (
         <CardContainer className="text-light">
           <Spinner animation="border" />
         </CardContainer>
-      }
+      )}
 
       <DescriptionContent>
         <h4>Descripción:</h4>

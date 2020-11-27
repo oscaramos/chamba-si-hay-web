@@ -1,13 +1,13 @@
-import React,{ useState, useEffect }from 'react'
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import styled from 'styled-components'
+import styled from "styled-components";
 
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import BootstrapButton from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import MenuHeader from "../components/headers/MenuHeader";
 import useJob from "../hooks/useJob";
@@ -63,66 +63,73 @@ const toDDMMYYYY = (date) => {
   }
 };
 
-function JobCard({ role, item, ...props }) {
-  const href = `/job-description/${item._id}`;
-  const [, { acceptJob, rejectJob }] = useJob(item._id, { skipRequest: true });
+function JobCard({ role, data, ...props }) {
+  const [, { acceptJob, rejectJob }] = useJob(data._id, { skipRequest: true });
+
+  const jobDescriptionHref = `/job-description/${data._id}`;
+  const chatHref = `/chat/${data._id}`;
+
+  const hasWorker = !!data.worker;
 
   return (
     <JobCardContainer {...props}>
       <JobCardDescription>
         <Link
           className="text-secondary"
-          to={href}
+          to={jobDescriptionHref}
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "baseline",
-          }}>
-          <h5>{item.title}</h5>
+          }}
+        >
+          <h5>{data.title}</h5>
           <div style={{ fontSize: 12, marginLeft: 12 }}>
             {" "}
-            {toDDMMYYYY(new Date(item.endDate))}
+            {toDDMMYYYY(new Date(data.endDate))}
           </div>
         </Link>
         <div>
-          <p>{item.description}</p>
+          <p>{data.description}</p>
         </div>
 
         <JobCardButtons>
           {role === "collaborator" && (
             <>
-              <Link variant="primary" to={href}>
+              <Link variant="primary" to={chatHref}>
                 <Button variant="primary" onClick={acceptJob}>
                   Aceptar
                 </Button>
               </Link>
 
-              <Link variant="primary" to={href}>
+              <Link variant="primary" to={chatHref}>
                 <Button variant="outline-danger" onClick={rejectJob}>
                   Rechazar
                 </Button>
               </Link>
-
             </>
           )}
 
-          {role === "employer" && (
-            <Link variant="primary" to={href}>
-              <Button variant="outline-danger">
-                Cancelar
-              </Button>
-            </Link>
-
+          {role === "employer" ? (
+            hasWorker ? (
+              <Link variant="primary" to={chatHref}>
+                <Button variant="primary">Ir a Chat</Button>
+              </Link>
+            ) : (
+              <Button variant="outline-danger">Cancelar</Button>
+            )
+          ) : (
+            <></>
           )}
         </JobCardButtons>
       </JobCardDescription>
 
-      <JobCardMoney as={Link} to={href}>
+      <JobCardMoney as={Link} to={jobDescriptionHref}>
         <div>
           <MoneyIcon />
         </div>
         <div className="text-dark" style={{ marginTop: 8 }}>
-          <h6>S/. {item.amount}</h6>
+          <h6>S/. {data.amount}</h6>
         </div>
       </JobCardMoney>
     </JobCardContainer>
@@ -138,21 +145,23 @@ const ButtonAddJob = () => {
         right: 10,
       }}
     >
-       <Link
-          to={'/create-job'}
-          style={{
-            backgroundColor: "#00988D",
-            height: 60,
-            width: 60,
-            borderRadius: 30,
-            color: "#fff",
-            display:"flex",
-            justifyContent: "center",
-            alignItems: "center",
-
-          }}>
-          <span><i style={{fontSize: 30}} className="fas fa-plus"></i></span>
-        </Link>
+      <Link
+        to={"/create-job"}
+        style={{
+          backgroundColor: "#00988D",
+          height: 60,
+          width: 60,
+          borderRadius: 30,
+          color: "#fff",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <span>
+          <i style={{ fontSize: 30 }} className="fas fa-plus"></i>
+        </span>
+      </Link>
     </div>
   );
 };
@@ -169,40 +178,14 @@ const AnnouncementsContainer = styled.div`
   min-height: 100%;
 `;
 
-const getFilteredJobs = (jobs, role, filter) => {
-  if (role === "employer") {
-    if (filter === "active") {
-      return jobs.filter((job) => new Date(job.endDate) < new Date());
-    } else if (filter === "expired") {
-      return jobs.filter((job) => new Date(job.endDate) > new Date());
-    }
-  } else if (role === "collaborator") {
-    if (filter === "announcements") {
-      return jobs; // todo: waiting for backend
-      // return jobs.filter((job) => job.state === "pending");
-    } else if (filter === "accepted") {
-      return jobs.filter((job) => job.state === "accepted");
-    } else if (filter === "rejected") {
-      return jobs.filter((job) => job.state === "rejected");
-    }
-  }
-};
-
 function Announcements({ role, filter }) {
-  const [jobs, { getJobs }] = useJobs();
-
-  useEffect(() => {
-    getJobs(role);
-    // eslint-disable-next-line
-  }, [role]);
-
-  const filteredJobs = getFilteredJobs(jobs, role, filter);
+  const [jobs] = useJobs({ role, filter });
 
   return (
     <AnnouncementsContainer>
       <Scrollable>
-        {filteredJobs.map((item) => (
-          <JobCard key={item._id} item={item} role={role} />
+        {jobs.map((item) => (
+          <JobCard key={item._id} data={item} role={role} />
         ))}
       </Scrollable>
 

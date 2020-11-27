@@ -17,8 +17,10 @@ export default function useJob(id, options = {}) {
       const result = await JobService.getJob(id);
 
       if (result.status === 200) {
-        const job = result.response.job || {};
+        const job = result.response || {};
         setJob(job);
+      } else {
+        throw new Error("Error al pedir un trabajo");
       }
     };
 
@@ -28,23 +30,20 @@ export default function useJob(id, options = {}) {
   }, [id, skipRequest]);
 
   const acceptJob = async () => {
-    await JobService.acceptJob(job);
-    alert("trabajo aceptado");
+    await JobService.acceptJob(id);
   };
 
   const rejectJob = async () => {
-    await JobService.rejectJob(job);
-    alert("trabajo rechazado");
+    await JobService.rejectJob(id);
   };
 
   const updateJob = async () => {
     // todo: go to create job page
-    alert("Yendo a editar trabajo...");
   };
 
   const deleteJob = async () => {
+    // todo: wait until backend is ready, this doesnt work
     await JobService.deleteJob(job);
-    alert("trabajo eliminado");
   };
 
   return [job, { acceptJob, rejectJob, updateJob, deleteJob }];
