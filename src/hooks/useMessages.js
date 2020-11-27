@@ -1,32 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getMessages, storeMessage } from "../services/MessageService";
 
-function useMessages() {
-  const [messages, setMessages] = useState([
-    {
-      content: "Mensaje 1",
-      isFromOwner: false,
-    },
-    {
-      content: "Mensaje 2",
-      isFromOwner: false,
-    },
-    {
-      content: "The star malfunctions history like an ancient space suit.",
-      isFromOwner: true,
-    },
-  ]);
+function useMessages(jobId) {
+  const [messages, setMessages] = useState([]);
 
-  const send = (message) => {
-    setMessages([
-      ...messages,
-      {
-        content: message,
-        isFromOwner: true,
-      },
-    ]);
+  useEffect(() => {
+    const requestMessages = async () => {
+      const response = await getMessages(jobId);
+      if (response.status === 200) {
+        setMessages(response.data);
+      }
+    };
+
+    requestMessages();
+  }, [jobId]);
+
+  const send = async (message) => {
+    const response = await storeMessage(jobId, message);
+    if (response.status !== 200) {
+      throw new Error("Error al enviar mensaje");
+    }
   };
 
-  return { messages, send };
+  return [messages, { send }];
 }
 
 export default useMessages;

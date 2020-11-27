@@ -1,17 +1,15 @@
 import { apiUrl } from "../helpers/VarHelper";
+import AuthService from "./AuthService";
 const headers = {
   "Content-Type": "application/json",
 };
 
 export async function getMessages(jobId) {
-  const urlData = apiUrl + "/messages/all";
+  const urlData = apiUrl + "/messages/" + jobId + AuthService.tokenToParam();
   try {
     let response = await fetch(urlData, {
-      method: "POST",
+      method: "GET",
       headers: headers,
-      body: JSON.stringify({
-        jobId: jobId,
-      }),
     });
     const status = response.status;
     const responseJson = await response.json();
@@ -28,14 +26,14 @@ export async function getMessages(jobId) {
 }
 
 export async function storeMessage(jobId, message) {
-  const urlData = apiUrl + "/messages/store";
+  const urlData = apiUrl + "/messages/" + jobId + AuthService.tokenToParam();
   try {
     let response = await fetch(urlData, {
-      method: "POST",
+      method: "PUT",
       headers: headers,
       body: JSON.stringify({
         jobId: jobId,
-        messageContent: message,
+        content: message,
       }),
     });
     const status = response.status;

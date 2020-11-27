@@ -53,7 +53,7 @@ function AuthenticatedApp() {
       <Route exact path="/" component={Home} />
       <Route path="/job-description/:id" component={JobDescription} />
       <Route path="/create-job" component={CreateJob} />
-      <Route path="/chat" component={Chat} />
+      <Route path="/chat/:jobId" component={Chat} />
       <Route path="/map" component={Map} />
       <Route path="*" component={NotFound} />
     </Switch>

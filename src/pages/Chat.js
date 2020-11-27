@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
 
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -26,13 +27,13 @@ const MessageInnerContainer = styled.div`
   margin-left: ${(props) => (props.isFromOwner ? "auto" : undefined)};
 `;
 
-function Message({ children: text, isFromOwner = false }) {
+function Message({ children: text, isMine = false }) {
   return (
     <MessageContainer>
-      <MessageInnerContainer isFromOwner={isFromOwner}>
+      <MessageInnerContainer isFromOwner={isMine}>
         <div
           style={{
-            color: isFromOwner ? "white" : "#00988D",
+            color: isMine ? "white" : "#00988D",
             marginBottom: -8,
             fontSize: 14,
           }}
@@ -41,7 +42,7 @@ function Message({ children: text, isFromOwner = false }) {
         </div>
         <div
           style={{
-            color: isFromOwner ? "#E5E5E5" : undefined,
+            color: isMine ? "#E5E5E5" : undefined,
             alignSelf: "flex-end",
             fontSize: 12,
           }}
@@ -113,16 +114,14 @@ const MessagesContainer = styled.div`
 `;
 
 function Messages() {
-  const { messages, send } = useMessages();
+  const { jobId } = useParams();
+  const [messages, { send }] = useMessages(jobId);
 
   return (
     <MessagesContainer>
       <Scrollable>
         {messages.map((message, index) => (
-          <Message
-            key={`${index} ${message.content}`}
-            isFromOwner={message.isFromOwner}
-          >
+          <Message key={`${index} ${message.content}`} isMine={message.mine}>
             {message.content}
           </Message>
         ))}
